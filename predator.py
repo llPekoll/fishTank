@@ -9,7 +9,7 @@ class Predator(Fish):
     """
 
     def __init__(self, rect=None, color=None):
-        Fish.__init__(self,rect, color)
+        Fish.__init__(self, rect, color)  # could we make it super
         
         self.pred_count = 0
         self.pred_count += 1
@@ -23,7 +23,7 @@ class Predator(Fish):
         self.WALL_CONST = 2.0
         self.REPULSIVE_CONST = 40.0
         
-    def cal_prey_forces(self,prey_list):
+    def cal_prey_forces(self, prey_list):
         force_x, force_y = 0, 0
         
         if not prey_list:
@@ -38,13 +38,13 @@ class Predator(Fish):
             
             a = self.rect[0] - prey.rect[0]
             b = self.rect[1] - prey.rect[1]
-            c = sqrt(a**2 +b**2)
+            c = sqrt(a**2 + b**2)
             
             if c > self.VISION or c == 0:
                 continue
             else:
-                force_x += HUNGER_CONST * (a/c)
-                force_y += HUNGER_CONST * (y/c)
-                break #after we find the closest fish
+                force_x += self.HUNGER_CONST * (a/c)
+                force_y += self.HUNGER_CONST * (b/c)
+                break  # after we find the closest fish
         return force_x, force_y
         

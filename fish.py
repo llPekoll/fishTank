@@ -1,9 +1,11 @@
 from math import pi, sqrt, cos, sin, atan2
 from random import random
 
-from pygame import sprite, Color, Surface
+import pygame
+from pygame import Color, Surface
 from pygame.sprite import collide_circle, Sprite
-from pygame.locals import *
+# from pygame.locals import *
+
 
 class Fish(Sprite):
     """
@@ -12,12 +14,12 @@ class Fish(Sprite):
     def __init___(self, rect=None, color=None):
         Sprite.__init__(self)
         self.count = 0
-        self.count += 1 # we might want to move the counter un some other call
+        self.count += 1  # we might want to move the counter un some other call
         self.fish_ID = self.count
 
         self.color = color if not self.color else Color(255, 0, 0)
 
-        if rect :
+        if rect:
             self.image = Surface([rect[2], rect[3]])
             self.image.fill(self.color)
             self.rect = rect
@@ -45,8 +47,7 @@ class Fish(Sprite):
             Collision Detection.
         """
         
-        return False if sprite1 == sprite2 else collide_circle(sprite1, sprite2) 
-
+        return False if sprite1 == sprite2 else collide_circle(sprite1, sprite2)  # nota :E501 
 
     def orientation_from_components(dx, dy):
         """
@@ -62,7 +63,7 @@ class Fish(Sprite):
         """
             Based on xVel, yVel, which way am I facing? 
         """
-        return physics.orientation_from_components(self.xVel, self.yVel)
+        return self.orientation_from_components(self.xVel, self.yVel)
 
     def behind_me(self, otherFish):
         """
