@@ -10,14 +10,12 @@ from pygame.draw import line, rect
 
 class Fish(Sprite):
   
-    def __init___(self, spawn, size, color, id):
+    def __init___(self, screen, spawn, size, color, id):
         Sprite.__init__(self)
       
         self.image = pygame.Surface(size)
         self.image.fill(color)
         self.rect = self.image.get_rect()
-
-    #    self.death_sound = pygame.mixer.Sound('chew.wav')
         self.blindFOV = 0.5
         self.blindLeft = pi - self.blindFOV/2.
         self.blindRight = pi + self.blindFOV/2.
@@ -27,13 +25,14 @@ class Fish(Sprite):
         self.vel = [1,2]
         self.vel[0] = self.MAX_SPEED*cos(initialDirection)
         self.vel[1] = self.MAX_SPEED*sin(initialDirection)
-        self.load_sprites(spawn, size, color)
+        self.load_sprites(screen, spawn, size, color)
+        
+        line(screen, Color(255, 0, 0),
+             (500, 500), (10, 10), 50)
 
-    # def __del__(self):
-    #    self.death_sound.play()
 
-    def load_sprites(self, spawn, size, color):
-        pygame.Rect(spawn, size, color=color)
+    def load_sprites(self, screen, spawn, size, color):
+        rect(screen, (90, 2, 90), (spawn, size))
 
     def draw_direction_line(self):
         """Given a fish sprite, draw a line of motion using xVel and yVel."""

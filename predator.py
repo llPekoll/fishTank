@@ -1,13 +1,15 @@
 from math import sqrt
 
 from fish import Fish
+from pygame.mixer import Sound
 
 
 class Predator(Fish):
    
-    def __init__(self, spawn, size, color, id):
-        super().__init___(spawn, size, color, id)
+    def __init__(self, screen, spawn, size, color, id):
+        super().__init___(screen, spawn, size, color, id)
         self.pred_id = id
+        self.death_sound = Sound('chew.wav')
         self.MAX_SPEED_X = 4
         self.MAX_SPEED_Y = 4
         self.VISION = 500
@@ -16,6 +18,9 @@ class Predator(Fish):
         self.HUNGER_CONST = -10.0
         self.WALL_CONST = 2.0
         self.REPULSIVE_CONST = 40.0
+        
+    def __del__(self):
+        self.death_sound.play()
         
     def cal_prey_forces(self, prey_list):
         force_x, force_y = 0, 0

@@ -23,7 +23,7 @@ class Prey(Fish):
         self.ALIGNMENT_CONST = 0.5
         self.WALL_CONST = 2.0
         self.FEAR_CONST = 4.0
-
+       
     def get_flee_predator_force(self, predator_list):
         """
             flee from predator speed
