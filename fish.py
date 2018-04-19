@@ -4,60 +4,50 @@ from random import random
 import pygame
 from pygame import Color, Surface
 from pygame.sprite import collide_circle, Sprite
-from pygame.draw import line
+from pygame.draw import line, rect
 # from pygame.locals import *
 
 
 class Fish(Sprite):
-    """
-        Fish class
-    """
-
-    def __init___(self, rect=None, color=None):
+  
+    def __init___(self, spawn, size, color, id):
         Sprite.__init__(self)
-        self.count = 0
-        self.count += 1  # we might want to move the counter un some other call
-        self.fish_ID = self.count
+      
+        self.image = pygame.Surface(size)
+        self.image.fill(color)
+        self.rect = self.image.get_rect()
 
-        self.color = color if not self.color else Color(255, 0, 0)
-
-        if rect:
-            self.image = Surface([rect[2], rect[3]])
-            self.image.fill(self.color)
-            self.rect = rect
-        else:
-            self.image .Surface([20, 20])
-            self.image.fill(self.color)
-            self.rect = self.image.get_rect()
-
-        self.deathSound = pygame.mixer.Sound('chew.wav')
+    #    self.death_sound = pygame.mixer.Sound('chew.wav')
         self.blindFOV = 0.5
         self.blindLeft = pi - self.blindFOV/2.
         self.blindRight = pi + self.blindFOV/2.
         initialDirection = random()*2.0*pi
-        self.MAX_SPEED_X = 6.0
-        self.MAX_SPEED_Y = 6.0
-        self.xVel = self.MAX_SPEED_X*cos(initialDirection)
-        self.yVel = self.MAX_SPEED_Y*sin(initialDirection)
 
-    def __del__(self):
-        if self.deathSound:
-            self.deathSound.play()
+        self.MAX_SPEED = 6
+        self.vel = [1,2]
+        self.vel[0] = self.MAX_SPEED*cos(initialDirection)
+        self.vel[1] = self.MAX_SPEED*sin(initialDirection)
+        self.load_sprites(spawn, size, color)
+
+    # def __del__(self):
+    #    self.death_sound.play()
+
+    def load_sprites(self, spawn, size, color):
+        pygame.Rect(spawn, size, color=color)
 
     def draw_direction_line(self):
         """Given a fish sprite, draw a line of motion using xVel and yVel."""
-        startX = self.rect[0]
-        startY = self.rect[1]
-        endX = (self.rect[0] + 2*self.xVel)
-        endY = (self.rect[1] + 2*self.yVel)
-        line(self.screen, Color(255, 0, 0), (startX, startY), (endX, endY), 3)
+        endX = (self.rect[0] + 2*self.Vel[0])
+        endY = (self.rect[1] + 2*self.Vel[1])
+        screen = pygame.display.get_surface()
+        line(screen, Color(255, 0, 0),
+             (self.rect[0], self.rect[1]), (endX, endY), 3)
 
     def fish_collision(sprite1, sprite2):
         """
             Collision Detection.
         """
-        
-        return False if sprite1 == sprite2 else collide_circle(sprite1, sprite2)  # nota :E501 
+        return False if sprite1 == sprite2 else collide_circle(sprite1, sprite2)  # nota :E501
 
     def orientation_from_components(dx, dy):
         """
@@ -68,7 +58,7 @@ class Fish(Sprite):
         else:
             orientation = atan2(float(dy), float(dx))
         return orientation
-    
+
     def calc_orientation(self):
         """
             Based on xVel, yVel, which way am I facing? 

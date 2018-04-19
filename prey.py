@@ -6,10 +6,9 @@ class Prey(Fish):
     """
         Fish (prey)
     """
-    def __init__(self, rect =None, color=None)
-        Fish.__init__(self, rect, color)
-        self.count = 0
-        self.prey_ID = self.count
+    def __init__(self, spawn_x, spwan_y, color, id):
+        super().__init__( spawn_x, spwan_y, color, id)
+        self.prey_ID = id
         self.MAX_SPEED_X = 9.0  # this could be inside the fish since it's in both class
         self.MAX_SPEED_Y = 9.0
 
@@ -25,13 +24,6 @@ class Prey(Fish):
         self.WALL_CONST = 2.0
         self.FEAR_CONST = 4.0
 
-    def load_sprites(self, spawn_x, spwan_y, color):
-        """
-            Load Predator sprites.
-        """
-        pygame.Rect(spawn_x, spwan_y, 30, 30), color=self.color))
-
-    
     def get_flee_predator_force(self, predator_list):
         """
             flee from predator speed
@@ -157,5 +149,3 @@ class Prey(Fish):
             self.yVel = min(self.MAX_SPEED_Y, self.yVel)
         else:
             self.yVel = max(-self.MAX_SPEED_Y, self.yVel)
-
-        

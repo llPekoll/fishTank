@@ -4,16 +4,10 @@ from fish import Fish
 
 
 class Predator(Fish):
-    """
-        Predator will move toward prey and kill them
-    """
-
-    def __init__(self, spawn_x, spawn_y, rect=None, color=None):
-        Fish.__init__(self, rect, color)  # could we make it super
-        self.color = color
-        self.pred_count = 0
-        self.pred_count += 1
-        self.pred_ID = self.pred_count
+   
+    def __init__(self, spawn, size, color, id):
+        super().__init___(spawn, size, color, id)
+        self.pred_id = id
         self.MAX_SPEED_X = 4
         self.MAX_SPEED_Y = 4
         self.VISION = 500
@@ -22,14 +16,6 @@ class Predator(Fish):
         self.HUNGER_CONST = -10.0
         self.WALL_CONST = 2.0
         self.REPULSIVE_CONST = 40.0
-        self.load_sprites(spawn_x, spawn_y, color)
-
-    def load_sprites(self, spawn_x, spwan_y, color):
-        """
-            Load Predator sprites.
-        """
-        pygame.Rect(spawn_x, spwan_y, 30, 30), color=self.color))
-
         
     def cal_prey_forces(self, prey_list):
         force_x, force_y = 0, 0
