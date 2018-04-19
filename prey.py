@@ -24,6 +24,13 @@ class Prey(Fish):
         self.ALIGNMENT_CONST = 0.5
         self.WALL_CONST = 2.0
         self.FEAR_CONST = 4.0
+
+    def load_sprites(self, spawn_x, spwan_y, color):
+        """
+            Load Predator sprites.
+        """
+        pygame.Rect(spawn_x, spwan_y, 30, 30), color=self.color))
+
     
     def get_flee_predator_force(self, predator_list):
         """
@@ -135,7 +142,7 @@ class Prey(Fish):
         # Check the walls.
         wallForces = self.calc_wall_forces(aquarium.width, aquarium.height)
 
-        # Calculate final speed for this step.
+        # get final speed for this step.
         allForces = [repulsiveForces, attractiveForces, alignmentForces, wallForces, predatorForces]
         for force in allForces:
             self.xVel += force[0]

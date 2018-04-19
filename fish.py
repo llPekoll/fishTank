@@ -4,6 +4,7 @@ from random import random
 import pygame
 from pygame import Color, Surface
 from pygame.sprite import collide_circle, Sprite
+from pygame.draw import line
 # from pygame.locals import *
 
 
@@ -11,6 +12,7 @@ class Fish(Sprite):
     """
         Fish class
     """
+
     def __init___(self, rect=None, color=None):
         Sprite.__init__(self)
         self.count = 0
@@ -27,7 +29,7 @@ class Fish(Sprite):
             self.image .Surface([20, 20])
             self.image.fill(self.color)
             self.rect = self.image.get_rect()
-        
+
         self.deathSound = pygame.mixer.Sound('chew.wav')
         self.blindFOV = 0.5
         self.blindLeft = pi - self.blindFOV/2.
@@ -41,7 +43,15 @@ class Fish(Sprite):
     def __del__(self):
         if self.deathSound:
             self.deathSound.play()
-    
+
+    def draw_direction_line(self):
+        """Given a fish sprite, draw a line of motion using xVel and yVel."""
+        startX = self.rect[0]
+        startY = self.rect[1]
+        endX = (self.rect[0] + 2*self.xVel)
+        endY = (self.rect[1] + 2*self.yVel)
+        line(self.screen, Color(255, 0, 0), (startX, startY), (endX, endY), 3)
+
     def fish_collision(sprite1, sprite2):
         """
             Collision Detection.
