@@ -6,11 +6,13 @@ class Prey(Fish):
     """
         Fish (prey)
     """
-    def __init__(self, spawn_x, spwan_y, color, id):
-        super().__init__( spawn_x, spwan_y, color, id)
+    def __init__(self, screen, spawn, size, color, id):
+        super().__init___(screen, spawn, size, color, id)
         self.prey_ID = id
-        self.MAX_SPEED_X = 9.0  # this could be inside the fish since it's in both class
-        self.MAX_SPEED_Y = 9.0
+        self.xVel = 0
+        self.yVel = 0
+        self.color = color
+        self.MAX_SPEED = 9 
 
         self.ZONE_OF_REPULSION = 50
         self.ZONE_OF_ALIGNMENT = 100
@@ -50,7 +52,7 @@ class Prey(Fish):
             calculate the force of attration betwenn other fishes
         """
         force_x, force_y = 0, 0
-        if not fish_list:
+        if not prey_list:
             return force_x, force_y
         for prey in prey_list:
             if prey.color != self.color:
@@ -62,8 +64,8 @@ class Prey(Fish):
             c = sqrt(a**2 + b**2)
             if c> self.ZONE_OF_ATTRACTION or c <= self.ZONE_OF_REPULSION:
                 continue
-            force_x += (ATTRACTIVE_CONST / c) * (a / c)
-            force_y += (ATTRACTIVE_CONST / c) * (b / c)
+            force_x += (self.ATTRACTIVE_CONST / c) * (a / c)
+            force_y += (self.ATTRACTIVE_CONST / c) * (b / c)
         return force_x, force_y
 
     def get_repulsive_forces(self, prey_list):
@@ -79,10 +81,10 @@ class Prey(Fish):
             a = self.rect[0] - fish.rect[0]
             b = self.rect[1] - fish.rect[1]
             c = sqrt(a**2 + b**2)
-            if c == 0 or c > ZONE_OF_REPULSION:
+            if c == 0 or c > self.ZONE_OF_REPULSION:
                 continue
-            force_x += (REPULSIVE_CONST / c) * (a / c)
-            force_y += (REPULSIVE_CONST / c) * (b / c)
+            force_x += (self.REPULSIVE_CONST / c) * (a / c)
+            force_y += (self.REPULSIVE_CONST / c) * (b / c)
         return force_x, force_y        
      
     def get_alignment_forces(self, prey_list):
@@ -99,10 +101,10 @@ class Prey(Fish):
             dx = self.rect[0] - fish.rect[0]
             dy = self.rect[1] - fish.rect[1]
             r = sqrt(dx**2 + dy**2)
-            if r < ZONE_OF_REPULSION or r > ZONE_OF_ALIGNMENT:
+            if r < self.ZONE_OF_REPULSION or r > self.ZONE_OF_ALIGNMENT:
                 continue
-            force_x += fish.xVel * (ALIGNMENT_CONST / r)
-            force_y += fish.yVel * (ALIGNMENT_CONST / r)
+            force_x += fish.xVel * (self.ALIGNMENT_CONST / r)
+            force_y += fish.yVel * (self.ALIGNMENT_CONST / r)
         return force_x, force_y                
 
     def calc_wall_forces(self, width, height):
@@ -142,10 +144,11 @@ class Prey(Fish):
 
         # Ensure fish doesn't swim too fast.
         if self.xVel >= 0:
-            self.xVel = min(self.MAX_SPEED_X, self.xVel)
+            self.xVel = min(self.MAX_SPEED, self.xVel)
         else:
-            self.xVel = max(-self.MAX_SPEED_X, self.xVel)
+            self.xVel = max(-self.MAX_SPEED, self.xVel)
         if self.yVel >= 0:
-            self.yVel = min(self.MAX_SPEED_Y, self.yVel)
+            self.yVel = min(self.MAX_SPEED, self.yVel)
         else:
-            self.yVel = max(-self.MAX_SPEED_Y, self.yVel)
+            self.yVel = max(-self.MAX_SPEED, self.yVel)
+

@@ -10,8 +10,7 @@ class Predator(Fish):
         super().__init___(screen, spawn, size, color, id)
         self.pred_id = id
         self.death_sound = Sound('chew.wav')
-        self.MAX_SPEED_X = 4
-        self.MAX_SPEED_Y = 4
+        self.MAX_SPEED = 4
         self.VISION = 500
         self.ZONE_OF_WALL = 5
         self.ZONE_OF_REPULSION = 100
@@ -46,4 +45,35 @@ class Predator(Fish):
                 force_y += self.HUNGER_CONST * (b/c)
                 break  # after we find the closest fish
         return force_x, force_y
-        
+
+    def update_velocity(self, aquarium):
+        """Update the fishes velocity based on forces from other fish."""
+        # Stay near other fish, but not too close, and swim in same direction.
+        prey_list = aquarium.prey_group.sprites()
+        prey_list.remove(self)
+        attractiveForces = self.get_flock_force(prey_list)
+        repulsiveForces = self.get_repulsive_forces(prey_list)
+        alignmentForces = self.get_alignment_forces(prey_list)
+
+        # If a predator is within 20 pixels, run away
+        predator_list = aquarium.predator_group.sprites()
+        predatorForces = self.get_flee_predator_force(predator_list)
+
+        # Check the walls.
+        wallForces = self.calc_wall_forces(aquarium.width, aquarium.height)
+
+        # get final speed for this step.
+        allForces = [repulsiveForces, attractiveForces, alignmentForces, wallForces, predatorForces]
+        for force in allForces:
+            self.xVel += force[0]
+            self.yVel += force[1]
+
+        # Ensure fish doesn't swim too fast.
+        if self.xVel >= 0:
+            self.xVel = min(self.MAX_SPEED, self.xVel)
+        else:
+            self.xVel = max(-self.MAX_SPEED, self.xVel)
+        if self.yVel >= 0:
+            self.yVel = min(self.MAX_SPEED, self.yVel)
+        else:
+            self.yVel = max(-self.MAX_SPEED, self.yVel)
