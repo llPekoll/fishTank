@@ -27,18 +27,17 @@ class Fish(Sprite):
         self.vel[1] = self.MAX_SPEED*sin(initialDirection)
 
         self.draw_fish(screen, spawn, size, color)
-        self.draw_direction_line()
-
+        
     def draw_fish(self, screen, spawn, size, color):
         self.rect = rect(screen, (90, 2, 90), (spawn, size))
+        self.draw_direction_line(screen)
 
-    def draw_direction_line(self):
-        endX = (self.rect[0] + 10 * self.vel[0])
-        endY = (self.rect[1] + 10 * self.vel[1])
-        screen = pygame.display.get_surface()
-        line(screen, Color(255, 0, 0),
-             (self.rect[0], self.rect[1]), (endX, endY), 3)
-    
+    def draw_direction_line(self,screen):
+        endX = (self.rect[0] + 4 * self.vel[0])
+        endY = (self.rect[1] + 4 * self.vel[1])
+        ret = line(screen, Color(0, 0, 0),
+             (self.rect[0], self.rect[1]), (endX, endY))
+        
     def calc_orientation(self):
         """
             Based on xVel, yVel, which way am I facing? 

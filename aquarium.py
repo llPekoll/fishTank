@@ -26,11 +26,12 @@ class Aquarium:
         self.prey_group = pygame.sprite.Group()
 
 
-        self.PREY_NB = 13
-        self.PREDATOR_NB = 1
-        self.blue = pygame.Color(0, 0, 255)
-        self.green = pygame.Color(0, 255, 0)
-        self.red = pygame.Color(255, 0, 0)
+        self.PREY_NB = 25
+        self.PREDATOR_NB = 2
+        self.blue = (0, 0, 255)
+        self.green =(0, 255, 0)
+        self.red = (255, 0, 0)
+        self.white = (255, 255, 255)
 
     def populate_fish_tank(self):
 
@@ -55,14 +56,10 @@ class Aquarium:
        
         while True:
 
-            event = pygame.event.poll()
-            if event.type == pygame.QUIT:
-                break
-
             self.screen.fill((0, 0, 255))
             self.predator_group.draw(self.screen)
             self.prey_group.draw(self.screen)
-
+         
             for predator in self.predator_group.sprites():
                 predator.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
             for prey in self.prey_group.sprites():
@@ -70,8 +67,10 @@ class Aquarium:
 
             # Move fish                
             for predator in self.predator_group.sprites():
+                predator.draw_direction_line(self.screen)
                 predator.swim(self.width,self.height)                
             for prey in self.prey_group.sprites():
+                prey.draw_direction_line(self.screen)
                 prey.swim(self.width,self.height)
 
             # Check for all colisions among predators and fish
@@ -79,7 +78,7 @@ class Aquarium:
 
 
             fps = self.font.render(
-                str(int(self.clock.get_fps())), True, pygame.Color('white'))
+                str(int(self.clock.get_fps())) + " fps", True, pygame.Color('white'))
             self.screen.blit(fps, (50, 50))
             
             pygame.display.flip()
@@ -90,7 +89,6 @@ class Aquarium:
 def main():
     aquarium = Aquarium()
     aquarium.main_loop()
-
 
 if __name__ == "__main__":
     main()
