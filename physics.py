@@ -4,11 +4,8 @@ from pygame.sprite import collide_circle
 
 
 def fish_collision(sprite1, sprite2):
-    """Algorithm for determining if there is a collision between the sprites."""
-    if sprite1 == sprite2:
-        return False
-    else:
-        return collide_circle(sprite1, sprite2)
+    return False if sprite1 is sprite2 else collide_circle(sprite1, sprite2)
+
 
 
 def orientation_from_components(dx, dy):

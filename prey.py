@@ -10,7 +10,6 @@ class Prey(Fish):
     def __init__(self, screen, spawn, size, color, id):
         super().__init___(screen, spawn, size, color, id)
         self.prey_ID = id
-        # self.vel = [0, 0]
         self.color = color
         self.MAX_SPEED = 9
 
@@ -114,6 +113,7 @@ class Prey(Fish):
             force_x += self.WALL_CONST
         elif (self.rect[0]+self.rect[2]) > (width-self.ZONE_OF_WALL):
             force_x -= self.WALL_CONST
+        
         if self.rect[1] < self.ZONE_OF_WALL:
             force_y += self.WALL_CONST
         elif (self.rect[1]+self.rect[3]) > (height-self.ZONE_OF_WALL):
@@ -123,7 +123,7 @@ class Prey(Fish):
     def update_velocity(self, prey_list, predator_list, w, h):
         """Update the fishes velocity based on forces from other fish."""
         # Stay near other fish, but not too close, and swim in same direction.
-        prey_list.remove(self)
+        # prey_list.remove(self)
         attractiveForces = self.get_flock_force(prey_list)
         repulsiveForces = self.get_repulsive_forces(prey_list)
         alignmentForces = self.get_alignment_forces(prey_list)
@@ -142,13 +142,10 @@ class Prey(Fish):
             self.vel[1] += force[1]
 
         # Ensure fish doesn't swim too fast.
-        if self.vel[0] >= 0:
-            self.vel[0] = min(self.MAX_SPEED, self.vel[0])
-        else:
-            self.vel[0] = max(-self.MAX_SPEED, self.vel[0])
-        if self.vel[1] >= 0:
-            self.vel[1] = min(self.MAX_SPEED, self.vel[1])
-        else:
-            self.vel[1] = max(-self.MAX_SPEED, self.vel[1])
+        self.vel[0] = min(self.MAX_SPEED, self.vel[0]
+                          ) if self.vel[0] >= 0 else max(-self.MAX_SPEED, self.vel[0])
+        self.vel[1] = min(self.MAX_SPEED, self.vel[1]
+                          ) if self.vel[1] >= 0 else max(-self.MAX_SPEED, self.vel[1])
 
+    
     

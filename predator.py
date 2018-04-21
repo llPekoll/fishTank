@@ -5,7 +5,7 @@ from pygame.mixer import Sound
 
 
 class Predator(Fish):
-   
+
     def __init__(self, screen, spawn, size, color, id):
         super().__init___(screen, spawn, size, color, id)
         self.pred_id = id
@@ -17,10 +17,10 @@ class Predator(Fish):
         self.HUNGER_CONST = -10.0
         self.WALL_CONST = 2.0
         self.REPULSIVE_CONST = 40.0
-        
+
     def __del__(self):
         self.death_sound.play()
-        
+
     def calc_prey_forces(self, prey_list):
         """Calculate the force of running away from predators."""
         force_x, force_y = 0, 0
@@ -39,9 +39,8 @@ class Predator(Fish):
             else:
                 force_x += self.HUNGER_CONST * (dx / r)
                 force_y += self.HUNGER_CONST * (dy / r)
-                break # after we find the closest fish
+                break  # after we find the closest fish
         return force_x, force_y
-
 
     def calc_predator_forces(self, predator_list):
         """Predator-Predator repulsion."""
@@ -58,14 +57,15 @@ class Predator(Fish):
                 continue
             if r == 0:
                 force_x += (self.REPULSIVE_CONST / 1.) * (dx / 1.)
-                force_y += (self.REPULSIVE_CONST / 1.) * (dy / 1.)    
+                force_y += (self.REPULSIVE_CONST / 1.) * (dy / 1.)
             else:
                 force_x += (self.REPULSIVE_CONST / r) * (dx / r)
                 force_y += (self.REPULSIVE_CONST / r) * (dy / r)
-        return force_x, force_y  
+        return force_x, force_y
 
     def calc_wall_forces(self, w, h):
         """Calculate the inward force of a wall, which is very short range. Either 0 or CONST."""
+        
         force_x, force_y = 0, 0
         if self.rect[0] < self.ZONE_OF_WALL:
             force_x += self.WALL_CONST
@@ -79,44 +79,24 @@ class Predator(Fish):
 
     def update_velocity(self, prey_list, predator_list, w, h):
 
+        
         preyForces = self.calc_prey_forces(prey_list)
 
-        # Check neighboring predators
-        predator_list.remove(self)
+        # # Check neighboring predators
+        # predator_list.remove(self)
         predatorForces = self.calc_predator_forces(predator_list)
 
-        # Check the walls.
         wallForces = self.calc_wall_forces(w, h)
 
-        # Calculate final speed for this step.
+        # # Calculate final speed for this step.
         allForces = [preyForces, wallForces, predatorForces]
+        
         for force in allForces:
             self.vel[0] += force[0]
             self.vel[1] += force[1]
 
-        # Ensure fish doesn't swim too fast.
-        if self.vel[0] >= 0:
-            self.vel[0] = min(self.MAX_SPEED, self.vel[0])
-        else:
-            self.vel[0] = max(-self.MAX_SPEED, self.vel[0])
-        if self.vel[1] >= 0:
-            self.vel[1] = min(self.MAX_SPEED, self.vel[1])
-        else:
-            self.vel[1] = max(-self.MAX_SPEED, self.vel[1])
-        
-
-    def swim(self, w, h):
-        """Using my xVel and yVel values, take a step, so long as we don't swim out of bounds."""
-        # Keep fish in the window
-        if self.rect[0]+self.vel[0] <= 0 or self.rect[0]+self.vel[0] >= w:
-            dx = 0
-        else:
-            dx = self.vel[0]
-        if self.rect[1]+self.vel[1] <= 0 or self.rect[1]+self.vel[1] >= h:
-            dy = 0
-        else:
-            dy = self.vel[1]
-
-        self.rect.move_ip(dx, dy)
-
-  
+        # limit speed
+        self.vel[0] = min(self.MAX_SPEED, self.vel[0]
+                          ) if self.vel[0] >= 0 else max(-self.MAX_SPEED, self.vel[0])
+        self.vel[1] = min(self.MAX_SPEED, self.vel[1]
+                          ) if self.vel[1] >= 0 else max(-self.MAX_SPEED, self.vel[1])

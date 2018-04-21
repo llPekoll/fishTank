@@ -12,6 +12,7 @@ from prey import Prey
 class Aquarium:
 
     def __init__(self, width=1900, height=1080):
+
         pygame.init()
         self.font = pygame.font.Font(None, 30)
         self.clock = pygame.time.Clock()
@@ -62,10 +63,10 @@ class Aquarium:
             self.predator_group.draw(self.screen)
             self.prey_group.draw(self.screen)
 
-            # for predator in self.predator_group.sprites():
-            #     predator.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
-            # for prey in self.prey_group.sprites():
-            #     prey.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
+            for predator in self.predator_group.sprites():
+                predator.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
+            for prey in self.prey_group.sprites():
+                prey.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
 
             # Move fish                
             for predator in self.predator_group.sprites():
