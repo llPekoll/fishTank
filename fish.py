@@ -30,7 +30,7 @@ class Fish(Sprite):
         self.draw_direction_line()
 
     def draw_fish(self, screen, spawn, size, color):
-        rect(screen, (90, 2, 90), (spawn, size))
+        self.rect = rect(screen, (90, 2, 90), (spawn, size))
 
     def draw_direction_line(self):
         endX = (self.rect[0] + 2 * self.vel[0])
@@ -84,14 +84,14 @@ class Fish(Sprite):
         otherX, otherY = otherFish.rect[0], otherFish.rect[1]
         return sqrt((myX-otherX)**2 + (myY-otherY)**2)
     
-    def swim(self, aquarium):
+    def swim(self, w, h):
         """Using my xVel and yVel values, take a step, so long as we don't swim out of bounds."""
         # Keep fish in the window
-        if self.rect[0]+self.vel[0] <= 0 or self.rect[0]+self.vel[0] >= aquarium.width:
+        if self.rect[0]+self.vel[0] <= 0 or self.rect[0]+self.vel[0] >= w:
             dx = 0
         else:
             dx = self.vel[0]
-        if self.rect[1]+self.vel[1] <= 0 or self.rect[1]+self.vel[1] >= aquarium.height:
+        if self.rect[1]+self.vel[1] <= 0 or self.rect[1]+self.vel[1] >= h:
             dy = 0
         else:
             dy = self.vel[1]

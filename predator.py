@@ -21,59 +21,102 @@ class Predator(Fish):
     def __del__(self):
         self.death_sound.play()
         
-    def cal_prey_forces(self, prey_list):
+    def calc_prey_forces(self, prey_list):
+        """Calculate the force of running away from predators."""
         force_x, force_y = 0, 0
-        
         if not prey_list:
             return force_x, force_y
-         
         distances = [self.distance_to(f) for f in prey_list]
-        sorted_prey = sorted(zip(prey_list, distances), key=lambda x: x[1])
-
-        for prey, dist in sorted_prey:
-            if self.behind_me(prey):
+        sortedPrey = sorted(zip(prey_list, distances), key=lambda x: x[1])
+        for fish, dist in sortedPrey:
+            if self.behind_me(fish):
                 continue
-            
-            a = self.rect[0] - prey.rect[0]
-            b = self.rect[1] - prey.rect[1]
-            c = sqrt(a**2 + b**2)
-            
-            if c > self.VISION or c == 0:
+            dx = self.rect[0] - fish.rect[0]
+            dy = self.rect[1] - fish.rect[1]
+            r = sqrt(dx**2 + dy**2)
+            if r > self.VISION or r == 0:
                 continue
             else:
-                force_x += self.HUNGER_CONST * (a/c)
-                force_y += self.HUNGER_CONST * (b/c)
-                break  # after we find the closest fish
+                force_x += self.HUNGER_CONST * (dx / r)
+                force_y += self.HUNGER_CONST * (dy / r)
+                break # after we find the closest fish
         return force_x, force_y
 
-    def update_velocity(self, aquarium):
-        """Update the fishes velocity based on forces from other fish."""
-        # Stay near other fish, but not too close, and swim in same direction.
-        prey_list = aquarium.prey_group.sprites()
-        prey_list.remove(self)
-        attractiveForces = self.get_flock_force(prey_list)
-        repulsiveForces = self.get_repulsive_forces(prey_list)
-        alignmentForces = self.get_alignment_forces(prey_list)
 
-        # If a predator is within 20 pixels, run away
-        predator_list = aquarium.predator_group.sprites()
-        predatorForces = self.get_flee_predator_force(predator_list)
+    def calc_predator_forces(self, predator_list):
+        """Predator-Predator repulsion."""
+        force_x, force_y = 0, 0
+        if not predator_list:
+            return force_x, force_y
+        for fish in predator_list:
+            if self.behind_me(fish):
+                continue
+            dx = self.rect[0] - fish.rect[0]
+            dy = self.rect[1] - fish.rect[1]
+            r = sqrt(dx**2 + dy**2)
+            if r > self.ZONE_OF_REPULSION:
+                continue
+            if r == 0:
+                force_x += (self.REPULSIVE_CONST / 1.) * (dx / 1.)
+                force_y += (self.REPULSIVE_CONST / 1.) * (dy / 1.)    
+            else:
+                force_x += (self.REPULSIVE_CONST / r) * (dx / r)
+                force_y += (self.REPULSIVE_CONST / r) * (dy / r)
+        return force_x, force_y  
+
+    def calc_wall_forces(self, w, h):
+        """Calculate the inward force of a wall, which is very short range. Either 0 or CONST."""
+        force_x, force_y = 0, 0
+        if self.rect[0] < self.ZONE_OF_WALL:
+            force_x += self.WALL_CONST
+        elif self.rect[0]+self.rect[2] > (w - self.ZONE_OF_WALL):
+            force_x -= self.WALL_CONST
+        if self.rect[1] < self.ZONE_OF_WALL:
+            force_y += self.WALL_CONST
+        elif self.rect[1]+self.rect[3] > (h - self.ZONE_OF_WALL):
+            force_y -= self.WALL_CONST
+        return force_x, force_y
+
+    def update_velocity(self, prey_list, predator_list, w, h):
+
+        preyForces = self.calc_prey_forces(prey_list)
+
+        # Check neighboring predators
+        predator_list.remove(self)
+        predatorForces = self.calc_predator_forces(predator_list)
 
         # Check the walls.
-        wallForces = self.calc_wall_forces(aquarium.width, aquarium.height)
+        wallForces = self.calc_wall_forces(w, h)
 
-        # get final speed for this step.
-        allForces = [repulsiveForces, attractiveForces, alignmentForces, wallForces, predatorForces]
+        # Calculate final speed for this step.
+        allForces = [preyForces, wallForces, predatorForces]
         for force in allForces:
-            self.xVel += force[0]
-            self.yVel += force[1]
+            self.vel[0] += force[0]
+            self.vel[1] += force[1]
 
         # Ensure fish doesn't swim too fast.
-        if self.xVel >= 0:
-            self.xVel = min(self.MAX_SPEED, self.xVel)
+        if self.vel[0] >= 0:
+            self.vel[0] = min(self.MAX_SPEED, self.vel[0])
         else:
-            self.xVel = max(-self.MAX_SPEED, self.xVel)
-        if self.yVel >= 0:
-            self.yVel = min(self.MAX_SPEED, self.yVel)
+            self.vel[0] = max(-self.MAX_SPEED, self.vel[0])
+        if self.vel[1] >= 0:
+            self.vel[1] = min(self.MAX_SPEED, self.vel[1])
         else:
-            self.yVel = max(-self.MAX_SPEED, self.yVel)
+            self.vel[1] = max(-self.MAX_SPEED, self.vel[1])
+        
+
+    def swim(self, w, h):
+        """Using my xVel and yVel values, take a step, so long as we don't swim out of bounds."""
+        # Keep fish in the window
+        if self.rect[0]+self.vel[0] <= 0 or self.rect[0]+self.vel[0] >= w:
+            dx = 0
+        else:
+            dx = self.vel[0]
+        if self.rect[1]+self.vel[1] <= 0 or self.rect[1]+self.vel[1] >= h:
+            dy = 0
+        else:
+            dy = self.vel[1]
+
+        self.rect.move_ip(dx, dy)
+
+  

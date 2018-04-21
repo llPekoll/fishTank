@@ -3,6 +3,7 @@ from random import random
 
 import pygame
 from pygame.locals import *
+import physics
 
 from predator import Predator as pred
 from prey import Prey
@@ -49,6 +50,7 @@ class Aquarium:
 
     def main_loop(self):
 
+        self.populate_fish_tank()
        
         while True:
 
@@ -60,32 +62,25 @@ class Aquarium:
             self.predator_group.draw(self.screen)
             self.prey_group.draw(self.screen)
 
-            for predator in self.predator_group.sprites():
-                predator.update_velocity(aquarium=self)
-            for prey in self.prey_group.sprites():
-                prey.update_velocity(aquarium=self)
+            # for predator in self.predator_group.sprites():
+            #     predator.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
+            # for prey in self.prey_group.sprites():
+            #     prey.update_velocity(self.prey_group, self.predator_group, self.width, self.height)
 
             # Move fish                
             for predator in self.predator_group.sprites():
-                predator.swim(aquarium=self)                
+                predator.swim(self.width,self.height)                
             for prey in self.prey_group.sprites():
-                prey.swim(aquarium=self)
-
-            # Draw direction arrows
-            for predator in self.predator_group.sprites():
-                self.draw_direction_line(predator)
-            for fish in self.prey_group.sprites():
-                self.draw_direction_line(fish)
+                prey.swim(self.width,self.height)
 
             # Check for all colisions among predators and fish
-            # spriteHitList = pygame.sprite.groupcollide(self.predator_group, self.prey_group, False, True, collided=fish.fish_collision)
+            spriteHitList = pygame.sprite.groupcollide(self.predator_group, self.prey_group, False, True, collided=physics.fish_collision)
 
 
             fps = self.font.render(
                 str(int(self.clock.get_fps())), True, pygame.Color('white'))
             self.screen.blit(fps, (50, 50))
-            self.populate_fish_tank()
-       
+            
             pygame.display.flip()
        
             self.clock.tick(60)
